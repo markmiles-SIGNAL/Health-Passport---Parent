@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>AiTHOS · Maya's Passport</title>
+<style>
+  :root{
+    --navy:#04173f;
+    --navy-2:#0a2350;
+    --navy-3:#0e2b62;
+    --aqua:#35d6ce;
+    --aqua-dim:#28a8a2;
+    --gold:#e6b864;
+    --coral:#ff7e6b;
+    --ink:#ffffff;
+    --ink-dim:#c5d1e8;
+    --ink-mute:#8094b4;
+    --card:#0d2452;
+    --line:rgba(255,255,255,0.08);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--navy);color:var(--ink);font-family:"SF Pro Display","Helvetica Neue",-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  body{
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(53,214,206,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 90% 30%, rgba(230,184,100,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 70% 50% at 10% 70%, rgba(255,126,107,0.08) 0%, transparent 60%),
+      var(--navy);
+    min-height:100vh;
+  }
+  button{font-family:inherit;cursor:pointer;border:0;background:transparent;color:inherit}
+  input,select,textarea{font-family:inherit;-webkit-appearance:none;appearance:none}
+
+  /* SHELL */
+  .shell{max-width:440px;margin:0 auto;padding:18px 20px 80px;position:relative}
+
+  /* TOPBAR */
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+  .logo{font-family:Georgia,"Times New Roman",serif;font-size:18px;font-weight:600;letter-spacing:.5px}
+  .logo span{color:var(--aqua)}
+  .top-sub{font-size:10.5px;letter-spacing:.20em;color:var(--ink-mute);text-transform:uppercase}
+
+  /* HERO */
+  .hero{margin-bottom:8px}
+  .hero h1{
+    font-family:Georgia,serif;
+    font-weight:600;
+    font-size:34px;
+    line-height:1.08;
+    margin:0 0 14px;
+    letter-spacing:-0.015em;
+  }
+  .hero h1 .grad{
+    background:linear-gradient(110deg,var(--aqua) 0%,var(--gold) 60%,var(--coral) 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .hero p{font-size:15.5px;color:var(--ink-dim);margin:0 0 22px;line-height:1.5}
+
+  /* PASSPORT (AMEX metallic, same as teen page) */
+  .passport{
+    position:relative;
+    background:
+      linear-gradient(115deg,
+        rgba(255,255,255,0.18) 0%,
+        rgba(255,255,255,0.05) 18%,
+        rgba(255,255,255,0.22) 32%,
+        rgba(255,255,255,0.04) 48%,
+        rgba(255,255,255,0.14) 64%,
+        rgba(255,255,255,0.02) 82%,
+        rgba(255,255,255,0.10) 100%),
+      linear-gradient(135deg,
+        #c8d2dc 0%,#8fa0b3 18%,#5d6b7d 42%,#3e4855 62%,#2a323d 82%,#1a1f28 100%);
+    background-blend-mode: overlay, normal;
+    border:1px solid rgba(255,255,255,0.22);
+    border-radius:22px;
+    padding:22px 22px 24px;
+    box-shadow:
+      0 30px 60px -20px rgba(0,0,0,0.7),
+      0 0 0 1px rgba(255,255,255,0.08) inset,
+      0 1px 0 rgba(255,255,255,0.30) inset,
+      0 -1px 0 rgba(0,0,0,0.30) inset;
+    overflow:hidden;
+    margin-bottom:28px;
+    transition:transform .4s cubic-bezier(.22,1,.36,1);
+    color:#f5f7fa;
+  }
+  .passport::before{
+    content:"";position:absolute;inset:0;
+    background:
+      repeating-linear-gradient(90deg,rgba(255,255,255,0.04) 0 1px,transparent 1px 3px),
+      repeating-linear-gradient(90deg,rgba(0,0,0,0.04) 0 1px,transparent 1px 5px);
+    pointer-events:none;border-radius:22px;
+  }
+  .passport::after{
+    content:"";position:absolute;top:-50%;left:-30%;width:60%;height:200%;
+    background:linear-gradient(115deg,
+      transparent 30%,
+      rgba(255,255,255,0.22) 48%,
+      rgba(255,255,255,0.35) 50%,
+      rgba(255,255,255,0.18) 52%,
+      transparent 70%);
+    transform:rotate(8deg);pointer-events:none;border-radius:22px;mix-blend-mode:overlay;
+  }
+  .passport.pulse{animation:pulse .5s ease}
+  @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.015)}100%{transform:scale(1)}}
+
+  .pp-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;position:relative;z-index:2}
+  .pp-brand{font-size:10px;letter-spacing:.30em;color:rgba(245,247,250,0.65);text-transform:uppercase}
+  .pp-brand b{color:#f5f7fa;letter-spacing:.30em}
+  .pp-signal{display:flex;align-items:center;gap:6px;font-size:11px;color:#f5f7fa;text-shadow:0 1px 2px rgba(0,0,0,0.4)}
+  .pp-signal-dot{width:7px;height:7px;border-radius:50%;background:var(--aqua);box-shadow:0 0 10px var(--aqua);animation:blink 2.4s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+
+  .pp-name{font-family:Georgia,serif;font-weight:600;font-size:30px;line-height:1.05;letter-spacing:-0.02em;margin-bottom:4px;position:relative;z-index:2;color:#fafbfc;text-shadow:0 1px 2px rgba(0,0,0,0.35)}
+  .pp-id{font-size:11.5px;color:rgba(245,247,250,0.7);letter-spacing:.10em;margin-bottom:22px;position:relative;z-index:2;text-shadow:0 1px 2px rgba(0,0,0,0.3)}
+
+  .pp-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;position:relative;z-index:2}
+  .pp-stat{padding:9px 10px;background:rgba(0,0,0,0.20);border:1px solid rgba(255,255,255,0.14);border-radius:10px;transition:all .25s;backdrop-filter:blur(2px)}
+  .pp-stat.lit{background:rgba(53,214,206,0.18);border-color:rgba(53,214,206,0.5);box-shadow:0 0 12px -2px rgba(53,214,206,0.3)}
+  .pp-stat-label{font-size:9.5px;letter-spacing:.16em;color:rgba(245,247,250,0.65);text-transform:uppercase;margin-bottom:3px}
+  .pp-stat-val{font-size:13px;color:#e8ecf2;font-weight:500}
+  .pp-stat.lit .pp-stat-val{color:var(--aqua)}
+
+  .pp-bar{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:2}
+  .pp-bar-l{font-size:11px;color:rgba(245,247,250,0.7)}
+  .pp-completeness{text-align:right;font-size:11px;color:rgba(245,247,250,0.7)}
+  .pp-completeness b{display:block;font-family:Georgia,serif;font-size:22px;color:#fafbfc;font-weight:600;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,0.4)}
+
+  /* CHIPS */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
+  .chip{font-size:11.5px;padding:5px 11px;border:1px solid rgba(255,255,255,0.12);border-radius:99px;color:var(--ink-dim);background:rgba(255,255,255,0.03)}
+  .chip b{color:var(--aqua);font-weight:600}
+
+  /* START CTA */
+  .start-cta{display:block;width:100%;background:linear-gradient(135deg,var(--aqua),var(--aqua-dim));color:var(--navy);font-size:17px;font-weight:700;padding:18px 22px;border-radius:16px;letter-spacing:.01em;box-shadow:0 14px 32px -12px rgba(53,214,206,0.65),0 0 0 1px rgba(53,214,206,0.4);transition:transform .15s, box-shadow .15s}
+  .start-cta:active{transform:scale(0.985)}
+  .start-cta:hover{box-shadow:0 18px 38px -10px rgba(53,214,206,0.75),0 0 0 1px rgba(53,214,206,0.5)}
+  .start-sub{text-align:center;font-size:12px;color:var(--ink-mute);margin-top:12px;margin-bottom:24px;line-height:1.5}
+
+  /* CHAT */
+  .chat{display:none;margin-top:28px}
+  .chat.open{display:block;animation:rise .4s cubic-bezier(.22,1,.36,1)}
+  @keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+  .saira-row{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .saira-av{width:34px;height:34px;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg,var(--aqua),var(--aqua-dim));display:flex;align-items:center;justify-content:center;color:var(--navy);font-weight:700;font-size:13px;box-shadow:0 6px 16px -4px rgba(53,214,206,0.5)}
+  .saira-bubble{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:16px 16px 16px 4px;padding:12px 14px;font-size:15px;color:var(--ink);line-height:1.45;max-width:88%}
+  .saira-bubble small{display:block;font-size:12.5px;color:var(--ink-mute);margin-top:5px;line-height:1.45}
+
+  .user-row{display:flex;justify-content:flex-end;margin-bottom:18px;animation:fade .35s ease}
+  .user-bubble{background:rgba(53,214,206,0.16);border:1px solid rgba(53,214,206,0.3);color:var(--ink);border-radius:16px 16px 4px 16px;padding:10px 14px;font-size:14.5px;max-width:80%}
+
+  /* OPTIONS */
+  .opts{display:flex;flex-direction:column;gap:9px;margin-bottom:22px;animation:fade .4s ease}
+  .opt{padding:13px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:12px;text-align:left;color:var(--ink);font-size:15px;transition:all .15s}
+  .opt:hover{background:rgba(53,214,206,0.10);border-color:rgba(53,214,206,0.4)}
+  .opt:active{transform:scale(0.99)}
+  .opt-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:22px;animation:fade .4s ease}
+  .opt-row .opt{margin:0}
+
+  /* TEXT INPUT */
+  .text-input{display:flex;gap:8px;margin-bottom:22px;animation:fade .4s ease}
+  .text-input input{flex:1;padding:13px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:12px;color:var(--ink);font-size:16px;outline:none;transition:border-color .15s}
+  .text-input input:focus{border-color:var(--aqua)}
+  .text-input button{padding:0 18px;background:var(--aqua);color:var(--navy);border-radius:12px;font-weight:700;font-size:14px}
+
+  /* SKIP LINK */
+  .skip-link{display:block;text-align:center;margin-top:-12px;margin-bottom:22px;font-size:13px;color:var(--ink-mute);text-decoration:none;cursor:pointer}
+  .skip-link:hover{color:var(--ink-dim)}
+
+  /* AGREEMENT BLOCK */
+  .agreement-block{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:14px;padding:16px 18px;margin-bottom:16px;animation:fade .4s ease}
+  .agreement-title{font-family:Georgia,serif;font-size:16px;color:#fff;margin:0 0 8px;font-weight:600}
+  .agreement-body{font-size:13.5px;line-height:1.55;color:var(--ink-dim);margin:0}
+  .agreement-link{color:var(--aqua);text-decoration:underline;cursor:pointer}
+
+  /* FINAL STATE */
+  .done{display:none;text-align:center;padding:20px 6px 0;animation:fade .5s ease}
+  .done.show{display:block}
+  .done h2{font-family:Georgia,serif;font-weight:600;font-size:30px;margin:0 0 10px;background:linear-gradient(110deg,var(--aqua),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .done p{color:var(--ink-dim);font-size:15.5px;line-height:1.55;margin:0 0 22px}
+  .done .next-cta{display:block;width:100%;background:linear-gradient(135deg,var(--aqua),var(--aqua-dim));color:var(--navy);font-size:16px;font-weight:700;padding:16px 20px;border-radius:14px;margin-bottom:10px;box-shadow:0 12px 28px -10px rgba(53,214,206,0.55)}
+  .done .secondary-cta{display:block;width:100%;background:transparent;border:1px solid rgba(255,255,255,0.14);color:var(--ink-dim);font-size:14px;padding:14px;border-radius:14px;margin-bottom:8px}
+  .done .micro{font-size:11.5px;color:var(--ink-mute);margin-top:14px;line-height:1.55;text-align:left;font-style:italic;background:rgba(255,255,255,0.03);padding:12px 14px;border-radius:10px}
+
+  /* FOOTER */
+  .footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-size:11px;color:var(--ink-mute);text-align:center;line-height:1.6}
+
+  /* SUBTLE NOISE */
+  .grain{position:fixed;inset:0;pointer-events:none;opacity:.025;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.7'/></svg>");z-index:0}
+
+  @media(min-width:520px){
+    .shell{max-width:480px;padding-top:32px}
+    .hero h1{font-size:40px}
+    .passport{padding:26px}
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="shell">
+
+  <!-- TOPBAR -->
+  <div class="top">
+    <div class="logo"><span>Ai</span>THOS</div>
+    <div class="top-sub">Health Passport</div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>Maya took her first step <span class="grad">toward owning her health.</span></h1>
+    <p>She built this with SAiRA — our AI guide. She accepted a Health Fiduciary Agreement that says AiTHOS works for <b>her</b>, not for clinics or insurers. She wanted you to see it.</p>
+  </div>
+
+  <!-- PASSPORT (already populated with Maya's draft state) -->
+  <div class="passport" id="passport">
+    <div class="pp-top">
+      <div class="pp-brand"><b>Ai</b>THOS · Health Passport</div>
+      <div class="pp-signal"><div class="pp-signal-dot"></div>Signal: ready</div>
+    </div>
+    <div class="pp-name" id="pp-name">Maya</div>
+    <div class="pp-id">ID · HP-M7K2-2026</div>
+    <div class="pp-stats">
+      <div class="pp-stat lit"><div class="pp-stat-label">Allergies</div><div class="pp-stat-val">None</div></div>
+      <div class="pp-stat lit"><div class="pp-stat-label">Meds</div><div class="pp-stat-val">None</div></div>
+      <div class="pp-stat lit"><div class="pp-stat-label">Emergency</div><div class="pp-stat-val">Linked</div></div>
+    </div>
+    <div class="pp-bar">
+      <div class="pp-bar-l">Draft · awaiting your contribution</div>
+      <div class="pp-completeness"><b id="pct">83%</b>complete</div>
+    </div>
+  </div>
+
+  <!-- CHIPS -->
+  <div class="chips">
+    <div class="chip">Patient-directed</div>
+    <div class="chip">HIPAA <b>§164.524</b></div>
+    <div class="chip">AI-guided</div>
+  </div>
+
+  <!-- START CTA -->
+  <button class="start-cta" id="start-btn">Continue with SAiRA →</button>
+  <div class="start-sub">SAiRA will walk you through the two things Maya needs from you: <b>joining the agreement</b> and <b>adding what only you know</b>.</div>
+
+  <!-- CHAT FLOW -->
+  <div class="chat" id="chat"></div>
+
+  <!-- FINAL STATE -->
+  <div class="done" id="done">
+    <h2>Maya's Passport is active.</h2>
+    <p>Thank you for joining her in this. Her Passport now carries what you both know — and grows with every visit from here on.</p>
+    <button class="next-cta" id="add-wallet">Send Maya the Apple Wallet link</button>
+    <button class="secondary-cta" id="your-own">Want one of your own? →</button>
+    <div class="micro">Many parents tell us this is the moment they realize they'd like an AiTHOS Healthograph for themselves. If that's you, it's here whenever you're ready.</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    Prototype · not medical advice · not for emergencies<br>
+    AiTHOS · Cadence Cove LLC · 2026
+  </div>
+
+</div>
+
+<script>
+  // ============================================================
+  // STATE
+  // ============================================================
+  const state = {
+    parentName: "",                  // captured during signup or fetched from URL
+    teenName: "Maya",                // injected from passport context
+    fiduciaryAccepted: false,
+    pediatrician: "",
+    immunizations: "",
+    insurance: "",
+    familyHistory: "",
+    emergencyPermissions: "",
+    completed: false,
+  };
+
+  const chat = document.getElementById('chat');
+  const passport = document.getElementById('passport');
+  const pctEl = document.getElementById('pct');
+  const startBtn = document.getElementById('start-btn');
+  const startSub = document.querySelector('.start-sub');
+  const doneEl = document.getElementById('done');
+
+  // ============================================================
+  // HELPERS
+  // ============================================================
+  function saira(text, small){
+    const row = document.createElement('div');
+    row.className = 'saira-row';
+    row.innerHTML = `<div class="saira-av">S</div><div class="saira-bubble">${text}${small?`<small>${small}</small>`:''}</div>`;
+    chat.appendChild(row);
+    scrollIntoView(row);
+  }
+  function user(text){
+    const row = document.createElement('div');
+    row.className = 'user-row';
+    row.innerHTML = `<div class="user-bubble">${text}</div>`;
+    chat.appendChild(row);
+    scrollIntoView(row);
+  }
+  function options(opts, onPick, opts2col){
+    const wrap = document.createElement('div');
+    wrap.className = opts2col || (opts.length<=4 && opts.every(o=>o.length<=14)) ? 'opt-row' : 'opts';
+    opts.forEach(o=>{
+      const b = document.createElement('button');
+      b.className = 'opt';
+      b.textContent = o;
+      b.onclick = ()=>{
+        wrap.remove();
+        user(o);
+        onPick(o);
+      };
+      wrap.appendChild(b);
+    });
+    chat.appendChild(wrap);
+    scrollIntoView(wrap);
+  }
+  function textPrompt(placeholder, onSubmit, opts){
+    opts = opts || {};
+    const wrap = document.createElement('div');
+    wrap.className = 'text-input';
+    const skipText = opts.skip || 'Skip for now';
+    const allowSkip = opts.allowSkip !== false;
+    wrap.innerHTML = `<input type="${opts.type||'text'}" placeholder="${placeholder}" autofocus /><button>OK</button>`;
+    const input = wrap.querySelector('input');
+    const btn = wrap.querySelector('button');
+    const submit = ()=>{
+      const v = input.value.trim();
+      if (!v) return;
+      wrap.remove();
+      skip && skip.remove();
+      user(v);
+      onSubmit(v);
+    };
+    btn.onclick = submit;
+    input.onkeydown = e=>{ if(e.key==='Enter') submit(); };
+    chat.appendChild(wrap);
+    let skip = null;
+    if (allowSkip) {
+      skip = document.createElement('a');
+      skip.className = 'skip-link';
+      skip.textContent = skipText;
+      skip.onclick = (e)=>{
+        e.preventDefault();
+        wrap.remove();
+        skip.remove();
+        user("(skipped for now)");
+        onSubmit(null);
+      };
+      chat.appendChild(skip);
+    }
+    scrollIntoView(wrap);
+    setTimeout(()=>input.focus(), 100);
+  }
+  function scrollIntoView(el){
+    setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'center'}), 50);
+  }
+  function pulsePassport(){
+    passport.classList.remove('pulse');
+    void passport.offsetWidth;
+    passport.classList.add('pulse');
+  }
+  function bumpCompleteness(){
+    // 83% starting, 17% remaining distributed across 6 parent fields (fid + 5 details)
+    const fields = [
+      state.fiduciaryAccepted,
+      state.pediatrician !== "",
+      state.immunizations !== "",
+      state.insurance !== "",
+      state.familyHistory !== "",
+      state.emergencyPermissions !== "",
+    ];
+    const filled = fields.filter(Boolean).length;
+    const pct = Math.min(100, 83 + Math.round((filled/6) * 17));
+    pctEl.textContent = pct + '%';
+    pulsePassport();
+  }
+
+  // ============================================================
+  // FLOW
+  // ============================================================
+  startBtn.addEventListener('click', ()=>{
+    startBtn.style.display='none';
+    startSub.style.display='none';
+    document.getElementById('chat').classList.add('open');
+    setTimeout(step1_greet, 200);
+  });
+
+  // Step 1 — greet and confirm parent's name
+  function step1_greet(){
+    saira(`Hi — I'm SAiRA. Maya asked me to walk you through your part of her Passport.`, `What should I call you?`);
+    setTimeout(()=>{
+      textPrompt("Your first name", (v)=>{
+        state.parentName = v;
+        setTimeout(step2_intro, 500);
+      }, {allowSkip:false});
+    }, 800);
+  }
+
+  // Step 2 — intro the two things
+  function step2_intro(){
+    saira(`Nice to meet you, ${state.parentName}. Maya has done most of this herself.`, `Two things still need you: <b>joining her Health Fiduciary Agreement</b>, and <b>adding what only you know</b>. About two minutes total.`);
+    setTimeout(()=>{
+      options(["Let's do it","Tell me more first"], (v)=>{
+        if (v === "Tell me more first") setTimeout(step2_more, 500);
+        else setTimeout(step3_agreement, 500);
+      });
+    }, 1100);
+  }
+
+  // Step 2b — optional explainer
+  function step2_more(){
+    saira(`Of course.`, `<b>The Health Fiduciary Agreement</b> is what makes AiTHOS yours and Maya's, not the system's. It says AiTHOS represents the patient's interest — period. Because Maya is under 18, you co-sign with her, not over her.<br><br><b>What only you know</b> covers things Maya can't reliably answer yet: her pediatrician, immunization history, insurance basics, family health history, and emergency permissions. The Passport stays in draft until both pieces are in.`);
+    setTimeout(()=>{
+      options(["Got it — let's start","Read the full agreement first"], (v)=>{
+        if (v === "Read the full agreement first") {
+          alert("Health Fiduciary Agreement — full text would open here.\n\nIn production, this opens the counsel-reviewed Parent-as-Co-Principal Health Fiduciary Agreement (Phase 1, Minor Cohort Edition). Pending pediatric digital-health counsel review.");
+          setTimeout(step3_agreement, 200);
+        } else {
+          setTimeout(step3_agreement, 500);
+        }
+      });
+    }, 1300);
+  }
+
+  // Step 3 — Fiduciary co-signature
+  function step3_agreement(){
+    saira(`Here's what you and Maya are joining together.`, ``);
+    const block = document.createElement('div');
+    block.className = 'agreement-block';
+    block.innerHTML = `
+      <p class="agreement-title">Health Fiduciary Agreement — minor cohort edition</p>
+      <p class="agreement-body">
+        AiTHOS acts in Maya's interest as her health fiduciary. It does not work for clinics, insurers, sponsors, or anyone else. It will not share her records without explicit, scoped permission. Because Maya is under 18, you co-sign as her parent or guardian — joining her in the agreement, not approving on her behalf. Certain categories of her records remain hers alone, by law (mental and behavioral health, sexual and reproductive health, substance-use related). When Maya turns 18, the principal relationship transfers entirely to her. <a class="agreement-link" onclick="alert('Full agreement text — pending pediatric digital-health counsel review. Will be drafted as the Parent-as-Co-Principal Health Fiduciary Agreement (Phase 1).')">Read the full agreement</a>.
+      </p>`;
+    chat.appendChild(block);
+    scrollIntoView(block);
+    setTimeout(()=>{
+      saira(`Do you join Maya in the Health Fiduciary Agreement, ${state.parentName}?`);
+      setTimeout(()=>{
+        options(["I join","Not yet"], (v)=>{
+          if (v === "I join") {
+            state.fiduciaryAccepted = true;
+            bumpCompleteness();
+            setTimeout(step4_pediatrician, 600);
+          } else {
+            saira(`That's okay. The Passport stays in draft until both of you have joined. You can come back to this anytime — your link doesn't expire.`);
+            setTimeout(()=>{
+              options(["Read it again","Join now"], (vv)=>{
+                if (vv === "Join now") {
+                  state.fiduciaryAccepted = true;
+                  bumpCompleteness();
+                  setTimeout(step4_pediatrician, 600);
+                } else {
+                  alert("Full agreement text — pending pediatric digital-health counsel review.");
+                  setTimeout(step3_agreement, 800);
+                }
+              });
+            }, 800);
+          }
+        });
+      }, 800);
+    }, 1200);
+  }
+
+  // Step 4 — pediatrician
+  function step4_pediatrician(){
+    saira(`Thank you. Now the part only you can do.`, `Who is Maya's pediatrician or primary clinic?`);
+    setTimeout(()=>{
+      textPrompt("e.g. Marin Pediatrics — Dr. Patel", (v)=>{
+        state.pediatrician = v || "skipped";
+        bumpCompleteness();
+        setTimeout(step5_immunizations, 500);
+      });
+    }, 700);
+  }
+
+  // Step 5 — immunizations
+  function step5_immunizations(){
+    saira(`Where is Maya's immunization record kept?`, `Most often this is at her pediatrician's office or in your state's immunization registry.`);
+    setTimeout(()=>{
+      options(["Pediatrician's office","State registry","Both","Not sure"], (v)=>{
+        state.immunizations = v;
+        bumpCompleteness();
+        setTimeout(step6_insurance, 500);
+      });
+    }, 700);
+  }
+
+  // Step 6 — insurance
+  function step6_insurance(){
+    saira(`Insurance basics — Maya's primary insurance carrier?`);
+    setTimeout(()=>{
+      textPrompt("e.g. Blue Shield of California", (v)=>{
+        state.insurance = v || "skipped";
+        bumpCompleteness();
+        setTimeout(step7_family, 500);
+      });
+    }, 600);
+  }
+
+  // Step 7 — family history
+  function step7_family(){
+    saira(`Family health history — anything material in immediate family that Maya's care team should know about?`, `Heart conditions, diabetes, cancer, autoimmune, mental health — just the categories, not the details. We'll capture more later if useful.`);
+    setTimeout(()=>{
+      options(["Yes, some","None notable","I'll add later"], (v)=>{
+        state.familyHistory = v;
+        bumpCompleteness();
+        setTimeout(step8_emergency, 500);
+      });
+    }, 800);
+  }
+
+  // Step 8 — emergency permissions
+  function step8_emergency(){
+    saira(`Last one. In an emergency, if Maya can't communicate, do you authorize her treating team to use her Passport to access general records?`, `This is the routine permission most families want. Sensitive categories Maya controls remain protected either way.`);
+    setTimeout(()=>{
+      options(["Yes, authorize","Not now"], (v)=>{
+        state.emergencyPermissions = v;
+        bumpCompleteness();
+        setTimeout(finish, 700);
+      });
+    }, 800);
+  }
+
+  // Final
+  function finish(){
+    state.completed = true;
+    saira(`That's it, ${state.parentName}.`, `Maya's Passport is active. She'll get a notification that you joined her. From here, every doctor visit can add to her record — and she stays in control of who sees what.`);
+    setTimeout(()=>{
+      chat.style.opacity = '0.6';
+      doneEl.classList.add('show');
+      doneEl.scrollIntoView({behavior:'smooth',block:'start'});
+    }, 1000);
+  }
+
+  document.getElementById('add-wallet').addEventListener('click', ()=>{
+    alert("Prototype placeholder.\n\nIn production: Maya is notified that you completed her Passport. She gets an Apple Wallet link to add the active version. You're done.");
+  });
+  document.getElementById('your-own').addEventListener('click', ()=>{
+    alert("Prototype placeholder.\n\nIn production: you'd start your own AiTHOS Healthograph here. The same Fiduciary Agreement, scoped to you as the principal. Many parents start here after seeing the value with their teen.");
+  });
+</script>
+</body>
+</html>
